@@ -56,13 +56,16 @@ def get_event_loop(force_fresh=False):
         if loop.is_closed():
             return asyncio.new_event_loop()
         return loop
-    elif sys.platform == 'win32':
+    if sys.platform == 'win32':
         if force_fresh:
             return asyncio.ProactorEventLoop()
-        loop = asyncio.get_event_loop()
+         try:
+            loop = asyncio.get_event_loop()
+         except RuntimeError:
+            return asyncio.ProactorEventLoop()
         if isinstance(loop, asyncio.ProactorEventLoop) and not loop.is_closed():
-            return loop
-        return asyncio.ProactorEventLoop()
+           return asyncio.ProactorEventLoop()
+        return loop
 
 
 # This code used to do something. I don't know what, though.
